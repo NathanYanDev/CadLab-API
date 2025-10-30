@@ -51,6 +51,14 @@ O sistema é composto por:
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+## 🧑‍🤝‍🧑 Equipe
+
+| Nome          | Função                 |
+| ------------- | ---------------------- |
+| Alisson Lee   | CI/CD e Apresentação   |
+| Davi Silva    | Documentação e Backend |
+| Nathan Yan    | Backend e Docker/API   |
+| William Alves | Swagger e Front        |
+
 
 
