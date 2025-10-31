@@ -89,4 +89,20 @@ router.post("/register", AuthController.register);
  */
 router.post("/login", AuthController.login);
 
+/**
+ * @swagger
+ * /auth/validate-token:
+ *   post:
+ *     summary: Validate a user's token
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token is valid
+ *       401:
+ *         description: Unauthorized
+ */
+router.post("/validate-token", AuthController.validateToken);
+
 export default router;

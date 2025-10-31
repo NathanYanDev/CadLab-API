@@ -22,7 +22,14 @@ export class LabController {
 
   static async create(req: Request, res: Response) {
     const repo = AppDataSource.getRepository(Lab);
-    const lab = repo.create(req.body);
+    const newLab = {
+      name: req.body.name,
+      location: req.body.location,
+      capacity: req.body.capacity,
+      rooms: [],
+      description: req.body.description,
+    };
+    const lab = repo.create(newLab);
     await repo.save(lab);
     return res.status(201).json(lab);
   }

@@ -26,7 +26,7 @@ export class AuthController {
 
       return res
         .status(201)
-        .json({ message: "Usuário criado com sucesso", token });
+        .json({ user: { name: user.name, email: user.email }, token });
     } catch (error) {
       return res.status(500).json({ error });
     }
@@ -51,5 +51,19 @@ export class AuthController {
       user: { id: user.id, name: user.name, email: user.email },
       token,
     });
+  }
+
+  static async validateToken(req: Request, res: Response) {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader)
+        return res.status(401).json({ message: "Token não fornecido" });
+
+      const token = authHeader.split(" ")[1];
+      jwt.verify(token, JWT_SECRET);
+      return res.status(200).json({ message: "Token válido" });
+    } catch (error) {
+      return res.status(401).json({ message: "Token inválido" });
+    }
   }
 }
