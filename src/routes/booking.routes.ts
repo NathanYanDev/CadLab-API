@@ -54,6 +54,33 @@ router.get("/room/:roomId", BookingController.getByRoom);
 
 /**
  * @swagger
+ * /bookings/user/{userId}:
+ *  get:
+ *     summary: Get bookings by user ID
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user
+ *     responses:
+ *      200:
+ *        description: Bookings for the specified user retrieved successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Booking'
+ */
+router.get("/user/:userId", BookingController.getByUser);
+
+/**
+ * @swagger
  * /bookings:
  *  post:
  *     summary: Create a new booking

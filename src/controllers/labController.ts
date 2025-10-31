@@ -35,14 +35,26 @@ export class LabController {
   }
 
   static async update(req: Request, res: Response) {
-    const repo = AppDataSource.getRepository(Lab);
-    const lab = await repo.findOneBy({ id: Number(req.params.id) });
-    if (!lab)
-      return res.status(404).json({ message: "Laboratório não encontrado" });
+    try {
+      const repo = AppDataSource.getRepository(Lab);
+      const id = Number(req.params.id);
 
-    repo.merge(lab, req.body);
-    await repo.save(lab);
-    return res.json(lab);
+      let lab = await repo.findOneBy({ id });
+
+      if (!lab) {
+        return res.status(404).json({ message: "Laboratório não encontrado" });
+      }
+
+      repo.merge(lab, req.body);
+      await repo.save(lab);
+
+      const updatedLab = await repo.findOneBy({ id });
+
+      return res.json(updatedLab);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erro ao atualizar laboratório" });
+    }
   }
 
   static async delete(req: Request, res: Response) {

@@ -35,6 +35,19 @@ export const BookingSchema = {
       example: "Aula prática de biologia molecular",
       description: "Motivo ou finalidade do agendamento (opcional)",
     },
+    description: {
+      type: "string",
+      nullable: true,
+      example: "Trazer equipamentos especiais para a aula",
+      description: "Descrição adicional do agendamento (opcional)",
+    },
+    status: {
+      type: "string",
+      enum: ["confirmed", "pending", "cancelled"],
+      example: "confirmed",
+      description:
+        "Status do agendamento, podendo ser 'confirmed', 'pending' ou 'cancelled'",
+    },
     createdAt: {
       type: "string",
       format: "date-time",

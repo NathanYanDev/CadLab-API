@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Room } from "./Room";
+import { Booking } from "./Booking";
 
 @Entity("labs")
 export class Lab {
@@ -27,6 +28,9 @@ export class Lab {
 
   @OneToMany(() => Room, (room) => room.lab, { cascade: true })
   rooms: Room[];
+
+  @OneToMany(() => Booking, (booking) => booking.lab, { cascade: true })
+  bookings: Booking[];
 
   @CreateDateColumn()
   createdAt: Date;

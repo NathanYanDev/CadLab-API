@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../database/data-source";
 import { Room } from "../models/Room";
+import { Lab } from "../models/Lab";
 
 export class RoomController {
   static async getAll(req: Request, res: Response) {
@@ -18,9 +19,28 @@ export class RoomController {
   }
 
   static async create(req: Request, res: Response) {
-    const repo = AppDataSource.getRepository(Room);
-    const room = repo.create(req.body);
-    await repo.save(room);
+    const userRepo = AppDataSource.getRepository(Room);
+    const labRepo = AppDataSource.getRepository(Lab);
+    const lab = await labRepo.findOneBy({ id: req.body.labId });
+
+    console.log("LabID: ", lab);
+    console.log("Requested LabID: ", req.body.labId);
+
+    if (!lab) {
+      return res.status(400).json({ message: "Laboratório inválido" });
+    }
+
+    const newRoom = {
+      name: req.body.name,
+      capacity: req.body.capacity,
+      description: req.body.description,
+      labId: req.body.labId,
+      lab,
+      bookings: [],
+    };
+
+    const room = userRepo.create(newRoom);
+    await userRepo.save(room);
     return res.status(201).json(room);
   }
 

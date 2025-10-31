@@ -9,11 +9,19 @@ import {
 } from "typeorm";
 import { Room } from "./Room";
 import { User } from "./User";
+import { Lab } from "./Lab";
 
 @Entity("bookings")
 export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ManyToOne(() => Lab, (lab) => lab.bookings, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "labId" })
+  lab: Lab;
+
+  @Column()
+  labId: number;
 
   @ManyToOne(() => Room, (room) => room.bookings, { onDelete: "CASCADE" })
   @JoinColumn({ name: "roomId" })
@@ -37,6 +45,16 @@ export class Booking {
 
   @Column({ type: "text", nullable: true })
   purpose?: string;
+
+  @Column({ type: "text", nullable: true })
+  description?: string;
+
+  @Column({
+    type: "text",
+    default: "confirmed",
+    enum: ["confirmed", "pending", "cancelled"],
+  })
+  status: string;
 
   @CreateDateColumn()
   createdAt: Date;

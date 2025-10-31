@@ -18,9 +18,27 @@ export class BookingController {
     return res.json(bookings);
   }
 
+  static async getByUser(req: Request, res: Response) {
+    const repo = AppDataSource.getRepository(Booking);
+    const bookings = await repo.find({
+      where: { userId: Number(req.params.userId) },
+      relations: ["room", "user"],
+    });
+    return res.json(bookings);
+  }
+
   static async create(req: Request, res: Response) {
     const repo = AppDataSource.getRepository(Booking);
-    const { roomId, userId, startTime, endTime, purpose } = req.body;
+    const {
+      roomId,
+      labId,
+      userId,
+      startTime,
+      endTime,
+      purpose,
+      description,
+      status,
+    } = req.body;
 
     const conflict = await repo
       .createQueryBuilder("booking")
@@ -39,6 +57,9 @@ export class BookingController {
     const booking = repo.create({
       roomId,
       userId,
+      labId,
+      description,
+      status,
       startTime,
       endTime,
       purpose,
