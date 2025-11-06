@@ -12,6 +12,9 @@ O sistema é composto por:
 - **Docker Compose** – Hospedagem da API
 - **PostgreSQL** - Banco de dados
 
+## Link da aplicação: https://cadlab-blond.vercel.app/login
+## Link do Swagger: https://cadlab-api-c7dbcre5czgvbzcj.brazilsouth-01.azurewebsites.net/api-docs/
+
 ---
 
 ## 🎯 Funcionalidades Principais
