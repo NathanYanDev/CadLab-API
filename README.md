@@ -52,71 +52,68 @@ O sistema é composto por:
 
 ### WorkFlow Github para CI/CD
 
-name: 🚀 CI/CD - API Laboratórios
-
+name: Build and Deploy Container App to Azure Web App - Cadlab-API
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
+    branches: [main]
+  workflow_dispatch:
+env:
+  IMAGE_NAME: cadlab-api
+  TAG: latest
 jobs:
-  build-and-test:
-    name: 🧪 Build e Testes
+  build:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
     steps:
-      - name: 📥 Checkout do repositório
+      - name: Checkout código
         uses: actions/checkout@v4
 
-      - name: ⚙️ Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: 📦 Instalar dependências
-        working-directory: ./backend
-        run: npm ci
-
-      - name: 🏗️ Compilar TypeScript
-        working-directory: ./backend
-        run: npm run build
-
-      - name: ✅ Executar testes (se houver)
-        working-directory: ./backend
-        run: npm test || echo "⚠️ Nenhum teste definido"
-
-      - name: 🐳 Build da imagem Docker
-        run: docker build -t labmanager-api ./backend
-
-  deploy:
-    name: 🚀 Deploy em Produção
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Checkout do repositório
-        uses: actions/checkout@v4
-
-      - name: ⚙️ Login no Docker Hub
+      - name: Login no Azure Container Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      - name: 🐳 Build da imagem Docker
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/labmanager-api:latest ./backend
-
-      - name: 📤 Push da imagem para o Docker Hub
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/labmanager-api:latest
-
-      - name: 🌐 Notificar Deploy (Render, Railway, etc.)
-        if: success()
-        run: |
-          curl -X POST ${{ secrets.DEPLOY_WEBHOOK_URL }} || echo "⚠️ Deploy manual necessário"
-
+      - name: Build e Push da imagem para o ACR (com cache remoto)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+          cache-from: type=registry,ref=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Login no Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Set environment variables in Azure Web App
+        run: >
+          az webapp config appsettings set
+          --resource-group ${{ secrets.RESOURCE_GROUP }}
+          --name ${{ secrets.WEBAPP_NAME }}
+          --settings
+          PORT=${{ secrets.PORT }}
+          DB_TYPE=${{ secrets.DB_TYPE }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          DB_NAME=${{ secrets.DB_NAME }}
+          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+          JWT_SECRET="${{ secrets.JWT_SECRET }}"
 ---
 
 ## 🧑‍🤝‍🧑 Equipe
