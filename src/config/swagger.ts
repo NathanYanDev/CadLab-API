@@ -24,7 +24,7 @@ const options = {
     servers: [
       {
         url: "https://cadlab-api-c7dbcre5czgvbzcj.brazilsouth-01.azurewebsites.net",
-        description: "Servidor de desenvolvimento",
+        description: "Servidor de produção",
       },
     ],
   },
