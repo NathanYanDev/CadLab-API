@@ -23,7 +23,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3001",
+        url: "https://cadlab-api-c7dbcre5czgvbzcj.brazilsouth-01.azurewebsites.net",
         description: "Servidor de desenvolvimento",
       },
     ],
