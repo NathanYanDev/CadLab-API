@@ -45,9 +45,18 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Configurar variáveis de ambiente no Web App
-        run: |
-          az webapp config appsettings set \
-            --resource-group ${{ secrets.RESOURCE_GROUP }} \
-            --name ${{ secrets.WEBAPP_NAME }} \
-            --settings PORT=${{ secrets.PORT }} DB_TYPE=${{ secrets.DB_TYPE }} DB_HOST=${{ secrets.DB_HOST }} DB_PORT=${{ secrets.DB_PORT }} DB_USER=${{ secrets.DB_USER }} DB_PASSWORD=${{ secrets.DB_PASSWORD }} DB_NAME=${{ secrets.DB_NAME }} FRONTEND_URL=${{ secrets.FRONTEND_URL }} JWT_SECRET=${{ secrets.JWT_SECRET }}
+      - name: Set environment variables in Azure Web App
+        run: >
+          az webapp config appsettings set
+          --resource-group ${{ secrets.RESOURCE_GROUP }}
+          --name ${{ secrets.WEBAPP_NAME }}
+          --settings
+          PORT=${{ secrets.PORT }}
+          DB_TYPE=${{ secrets.DB_TYPE }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          DB_NAME=${{ secrets.DB_NAME }}
+          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+          JWT_SECRET="${{ secrets.JWT_SECRET }}"
