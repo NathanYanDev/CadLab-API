@@ -88,10 +88,11 @@ jobs:
           tags: ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
           cache-from: type=registry,ref=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
+   
+    - deploy:
+      runs-on: ubuntu-latest
+      needs: build
+      permissions:
       id-token: write
       contents: read
     steps:
